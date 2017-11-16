@@ -67,15 +67,15 @@ module.exports = function (grunt) {
 					'build/mediaelement.js': [
 						'src/js/utils/polyfill.js',
 						'src/js/core/mediaelement.js',
-						'src/js/core/i18n.js',
-						'src/js/languages/en.js',
-						'src/js/renderers/html5.js',
-						'src/js/renderers/flash.js',
+						'src/js/renderers/html5.js'
 					].concat(rendererSources || [
-						'src/js/renderers/dash.js',
-						'src/js/renderers/flv.js',
-						'src/js/renderers/hls.js',
 						'src/js/renderers/youtube.js',
+						'src/js/renderers/dailymotion.js',
+						'src/js/renderers/vimeo.js',
+						'src/js/renderers/dash.js',
+						'src/js/renderers/hls.js',
+						//'src/js/renderers/soundcloud.js',
+						//'src/js/renderers/facebook.js',
 					]),
 					// all bundle
 					'build/mediaelement-and-player.js': [
