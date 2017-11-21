@@ -344,7 +344,7 @@ const DailyMotionIframeRenderer = {
 			}
 
 			events = mejs.html5media.events;
-			events = events.concat(['click', 'mouseover', 'mouseout']);
+			events = events.concat(mejs.html5media.mouseEvents);
 			const assignNativeEvents = (eventName) => {
 
 				// Deprecated event; not consider it
