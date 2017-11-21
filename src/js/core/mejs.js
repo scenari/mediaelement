@@ -44,10 +44,16 @@ mejs.html5media = {
 	/**
 	 * @type {String[]}
 	 */
+	mouseEvents: [
+		'click', 'dblclick', 'mouseover', 'mouseout'
+	],
+	/**
+	 * @type {String[]}
+	 */
 	mediaTypes: [
 		'audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4',
 		'video/mp4', 'video/webm', 'video/ogg', 'video/ogv'
-	]
+	]/*lez*/
 };
 
 window.mejs = mejs;

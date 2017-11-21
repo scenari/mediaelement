@@ -106,7 +106,7 @@ const FlvNativeRenderer = {
 
 		const
 			props = mejs.html5media.properties,
-			events = mejs.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(e => e !== 'error'),
+			events = mejs.html5media.events.concat(mejs.html5media.mouseEvents).filter(e => e !== 'error'),
 			attachNativeEvents = (e) => {
 				const event = createEvent(e.type, mediaElement);
 				mediaElement.dispatchEvent(event);
