@@ -280,7 +280,7 @@ var DailyMotionIframeRenderer = {
 			}
 
 			events = mejs.html5media.events;
-			events = events.concat(['click', 'mouseover', 'mouseout']);
+			events = events.concat(mejs.html5media.mouseEvents);
 			var assignNativeEvents = function assignNativeEvents(eventName) {
 				if (eventName !== 'ended') {
 					dmPlayer.addEventListener(eventName, function (e) {

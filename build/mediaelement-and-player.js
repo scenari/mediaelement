@@ -1027,8 +1027,9 @@ mejs.html5media = {
 
 	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'],
 
-	mediaTypes: ['audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4', 'video/mp4', 'video/webm', 'video/ogg', 'video/ogv']
-};
+	mouseEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
+
+	mediaTypes: ['audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4', 'video/mp4', 'video/webm', 'video/ogg', 'video/ogv'] };
 
 _window2.default.mejs = mejs;
 
@@ -5611,7 +5612,7 @@ var DashNativeRenderer = {
 		options = Object.assign(options, mediaElement.options);
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6297,7 +6298,7 @@ var FlvNativeRenderer = {
 		options = Object.assign(options, mediaElement.options);
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6549,7 +6550,7 @@ var HlsNativeRenderer = {
 		options.hls.autoStartLoad = preload && preload !== 'none' || autoplay;
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6827,7 +6828,7 @@ var HtmlMediaElement = {
 			assignGettersSetters(props[i]);
 		}
 
-		var events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		var events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    assignEvents = function assignEvents(eventName) {
