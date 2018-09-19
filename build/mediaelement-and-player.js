@@ -8,6 +8,26 @@
  * Copyright 2010-2017, John Dyer (http://j.hn/)
  * License: MIT
  *
+ *//*!
+ * MediaElement.js
+ * http://www.mediaelementjs.com/
+ *
+ * Wrapper that mimics native HTML5 MediaElement (audio and video)
+ * using a variety of technologies (pure JavaScript, Flash, iframe)
+ *
+ * Copyright 2010-2017, John Dyer (http://j.hn/)
+ * License: MIT
+ *
+ *//*!
+ * MediaElement.js
+ * http://www.mediaelementjs.com/
+ *
+ * Wrapper that mimics native HTML5 MediaElement (audio and video)
+ * using a variety of technologies (pure JavaScript, Flash, iframe)
+ *
+ * Copyright 2010-2017, John Dyer (http://j.hn/)
+ * License: MIT
+ *
  */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 
 },{}],2:[function(_dereq_,module,exports){
@@ -1020,12 +1040,12 @@ var mejs = {};
 mejs.version = '4.2.7';
 
 mejs.html5media = {
-	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
-	readOnlyProperties: ['duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable'],
+	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
+	readOnlyProperties: ['duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight'],
 
 	methods: ['load', 'play', 'pause', 'canPlayType'],
 
-	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'],
+	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange', 'resize'],
 
 	mouseEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
 
@@ -5623,7 +5643,7 @@ var DashNativeRenderer = {
 			var capName = '' + propName.substring(0, 1).toUpperCase() + propName.substring(1);
 
 			node['get' + capName] = function () {
-				return dashPlayer !== null ? node[propName] : null;
+				if (propName == 'readyState') return dashPlayer !== null ? node[propName] : 0;else return dashPlayer !== null ? node[propName] : null;
 			};
 
 			node['set' + capName] = function (value) {
@@ -5671,7 +5691,7 @@ var DashNativeRenderer = {
 				if (eventName === 'loadedmetadata') {
 					dashPlayer.getDebug().setLogToBrowserConsole(options.dash.debug);
 					dashPlayer.initialize();
-					dashPlayer.setScheduleWhilePaused(false);
+					if (originalNode.preload == "none") dashPlayer.setScheduleWhilePaused(false);
 					dashPlayer.setFastSwitchEnabled(true);
 					dashPlayer.attachView(node);
 					dashPlayer.setAutoPlay(false);
@@ -6561,7 +6581,7 @@ var HlsNativeRenderer = {
 			var capName = '' + propName.substring(0, 1).toUpperCase() + propName.substring(1);
 
 			node['get' + capName] = function () {
-				return hlsPlayer !== null ? node[propName] : null;
+				if (propName == 'readyState') return hlsPlayer !== null ? node[propName] : 0;else return hlsPlayer !== null ? node[propName] : null;
 			};
 
 			node['set' + capName] = function (value) {
@@ -7059,7 +7079,7 @@ var YouTubeIframeRenderer = {
 
 		var youtube = {},
 		    apiStack = [],
-		    readyState = 4;
+		    readyState = 0;
 
 		var youTubeApi = null,
 		    paused = true,
@@ -7288,7 +7308,7 @@ var YouTubeIframeRenderer = {
 						youTubeIframe.addEventListener(events[_i3], assignEvents, false);
 					}
 
-					var initEvents = ['rendererready', 'loadedmetadata', 'loadeddata', 'canplay'];
+					var initEvents = ['rendererready', 'durationchange', 'resize', 'loadedmetadata', 'loadeddata', 'canplay'];
 
 					for (var _i4 = 0, _total4 = initEvents.length; _i4 < _total4; _i4++) {
 						var event = (0, _general.createEvent)(initEvents[_i4], youtube);
