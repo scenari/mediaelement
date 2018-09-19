@@ -447,44 +447,6 @@ class MediaElement {
 			assignMethods(methods[i]);
 		}
 
-		// start: fake events
-		t.mediaElement.addEventListener = (eventName, callback) => {
-			// create or find the array of callbacks for this eventName
-			t.mediaElement.events[eventName] = t.mediaElement.events[eventName] || [];
-
-			// push the callback into the stack
-			t.mediaElement.events[eventName].push(callback);
-		};
-		t.mediaElement.removeEventListener = (eventName, callback) => {
-			// no eventName means remove all listeners
-			if (!eventName) {
-				t.mediaElement.events = {};
-				return true;
-			}
-
-			// see if we have any callbacks for this eventName
-			const callbacks = t.mediaElement.events[eventName];
-
-			if (!callbacks) {
-				return true;
-			}
-
-			// check for a specific callback
-			if (!callback) {
-				t.mediaElement.events[eventName] = [];
-				return true;
-			}
-
-			// remove the specific callback
-			for (let i = 0; i < callbacks.length; i++) {
-				if (callbacks[i] === callback) {
-					t.mediaElement.events[eventName].splice(i, 1);
-					return true;
-				}
-			}
-			return false;
-		};
-
 		/**
 		 *
 		 * @param {Event} event
