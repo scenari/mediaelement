@@ -122,7 +122,10 @@ const DashNativeRenderer = {
 			assignGettersSetters = (propName) => {
 				const capName = `${propName.substring(0, 1).toUpperCase()}${propName.substring(1)}`;
 
-				node[`get${capName}`] = () => (dashPlayer !== null) ? node[propName] : null;
+				node[`get${capName}`] = () => {
+					if (propName == 'readyState') return dashPlayer !== null ? node[propName] : 0;
+					else return dashPlayer !== null ? node[propName] : null;
+				};
 
 				node[`set${capName}`] = (value) => {
 					if (mejs.html5media.readOnlyProperties.indexOf(propName) === -1) {
@@ -173,7 +176,7 @@ const DashNativeRenderer = {
 						// Basic configuration
 						dashPlayer.getDebug().setLogToBrowserConsole(options.dash.debug);
 						dashPlayer.initialize();
-						if (originalNode.preload != "none") dashPlayer.setScheduleWhilePaused(false);
+						if (originalNode.preload == "none") dashPlayer.setScheduleWhilePaused(false);
 						dashPlayer.setFastSwitchEnabled(true);
 						dashPlayer.attachView(node);
 						dashPlayer.setAutoPlay(false);
