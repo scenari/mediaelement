@@ -921,42 +921,11 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 		assignMethods(methods[_i4]);
 	}
 
-	t.mediaElement.addEventListener = function (eventName, callback) {
-		t.mediaElement.events[eventName] = t.mediaElement.events[eventName] || [];
-
-		t.mediaElement.events[eventName].push(callback);
-	};
-	t.mediaElement.removeEventListener = function (eventName, callback) {
-		if (!eventName) {
-			t.mediaElement.events = {};
-			return true;
-		}
-
-		var callbacks = t.mediaElement.events[eventName];
-
-		if (!callbacks) {
-			return true;
-		}
-
-		if (!callback) {
-			t.mediaElement.events[eventName] = [];
-			return true;
-		}
-
-		for (var _i5 = 0; _i5 < callbacks.length; _i5++) {
-			if (callbacks[_i5] === callback) {
-				t.mediaElement.events[eventName].splice(_i5, 1);
-				return true;
-			}
-		}
-		return false;
-	};
-
 	t.mediaElement.dispatchEvent = function (event) {
 		var callbacks = t.mediaElement.events[event.type];
 		if (callbacks) {
-			for (var _i6 = 0; _i6 < callbacks.length; _i6++) {
-				callbacks[_i6].apply(null, [event]);
+			for (var _i5 = 0; _i5 < callbacks.length; _i5++) {
+				callbacks[_i5].apply(null, [event]);
 			}
 		}
 	};
