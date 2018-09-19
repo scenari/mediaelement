@@ -697,7 +697,6 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 
 	t.mediaElement.id = id;
 	t.mediaElement.renderers = {};
-	t.mediaElement.events = {};
 	t.mediaElement.promises = [];
 	t.mediaElement.renderer = null;
 	t.mediaElement.rendererName = null;
@@ -920,15 +919,6 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 	for (var _i4 = 0, _total = methods.length; _i4 < _total; _i4++) {
 		assignMethods(methods[_i4]);
 	}
-
-	t.mediaElement.dispatchEvent = function (event) {
-		var callbacks = t.mediaElement.events[event.type];
-		if (callbacks) {
-			for (var _i5 = 0; _i5 < callbacks.length; _i5++) {
-				callbacks[_i5].apply(null, [event]);
-			}
-		}
-	};
 
 	t.mediaElement.destroy = function () {
 		var mediaElement = t.mediaElement.originalNode.cloneNode(true);
