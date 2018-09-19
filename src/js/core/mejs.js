@@ -18,14 +18,14 @@ mejs.html5media = {
 		'volume', 'src', 'currentTime', 'muted',
 
 		// GET only
-		'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable',
+		'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight',
 
 		// OTHERS
 		'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime',
 		'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'
 	],
 	readOnlyProperties: [
-		'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable',
+		'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight'
 	],
 	/**
 	 * @type {String[]}
@@ -39,7 +39,7 @@ mejs.html5media = {
 	events: [
 		'loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough',
 		'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing',  'pause', 'waiting', 'seeking',
-		'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'
+		'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange', 'resize'
 	],
 	/**
 	 * @type {String[]}
