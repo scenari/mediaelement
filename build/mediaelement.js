@@ -750,7 +750,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mejs = {};
 
-mejs.version = '4.2.7';
+mejs.version = '4.2.9';
 
 mejs.html5media = {
 	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
@@ -2331,9 +2331,9 @@ var vimeoIframeRenderer = {
 		vimeoContainer.setAttribute('height', height);
 		vimeoContainer.setAttribute('frameBorder', '0');
 		vimeoContainer.setAttribute('src', '' + standardUrl + queryArgs);
-		vimeoContainer.setAttribute('webkitallowfullscreen', '');
-		vimeoContainer.setAttribute('mozallowfullscreen', '');
-		vimeoContainer.setAttribute('allowfullscreen', '');
+		vimeoContainer.setAttribute('webkitallowfullscreen', 'true');
+		vimeoContainer.setAttribute('mozallowfullscreen', 'true');
+		vimeoContainer.setAttribute('allowfullscreen', 'true');
 
 		mediaElement.originalNode.parentNode.insertBefore(vimeoContainer, mediaElement.originalNode);
 		mediaElement.originalNode.style.display = 'none';

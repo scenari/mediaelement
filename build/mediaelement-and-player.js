@@ -8,26 +8,6 @@
  * Copyright 2010-2017, John Dyer (http://j.hn/)
  * License: MIT
  *
- *//*!
- * MediaElement.js
- * http://www.mediaelementjs.com/
- *
- * Wrapper that mimics native HTML5 MediaElement (audio and video)
- * using a variety of technologies (pure JavaScript, Flash, iframe)
- *
- * Copyright 2010-2017, John Dyer (http://j.hn/)
- * License: MIT
- *
- *//*!
- * MediaElement.js
- * http://www.mediaelementjs.com/
- *
- * Wrapper that mimics native HTML5 MediaElement (audio and video)
- * using a variety of technologies (pure JavaScript, Flash, iframe)
- *
- * Copyright 2010-2017, John Dyer (http://j.hn/)
- * License: MIT
- *
  */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 
 },{}],2:[function(_dereq_,module,exports){
@@ -1037,7 +1017,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mejs = {};
 
-mejs.version = '4.2.7';
+mejs.version = '4.2.9';
 
 mejs.html5media = {
 	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
@@ -1269,7 +1249,7 @@ Object.assign(_player2.default.prototype, {
 
 		t.exitFullscreenCallback = function (e) {
 			var key = e.which || e.keyCode || 0;
-			if (key === 27 && (Features.HAS_TRUE_NATIVE_FULLSCREEN && Features.IS_FULLSCREEN || t.isFullScreen)) {
+			if (t.options.enableKeyboard && key === 27 && (Features.HAS_TRUE_NATIVE_FULLSCREEN && Features.IS_FULLSCREEN || t.isFullScreen)) {
 				player.exitFullScreen();
 			}
 		};
@@ -1322,6 +1302,10 @@ Object.assign(_player2.default.prototype, {
 		var t = this,
 		    isNative = t.media.rendererName !== null && /(html5|native)/i.test(t.media.rendererName),
 		    containerStyles = getComputedStyle(t.getElement(t.container));
+
+		if (!t.isVideo) {
+			return;
+		}
 
 		if (t.options.useFakeFullscreen === false && Features.IS_IOS && Features.HAS_IOS_FULLSCREEN && typeof t.media.originalNode.webkitEnterFullscreen === 'function' && t.media.originalNode.canPlayType((0, _media.getTypeFromFile)(t.media.getSrc()))) {
 			t.media.originalNode.webkitEnterFullscreen();
@@ -1410,6 +1394,10 @@ Object.assign(_player2.default.prototype, {
 	exitFullScreen: function exitFullScreen() {
 		var t = this,
 		    isNative = t.media.rendererName !== null && /(native|html5)/i.test(t.media.rendererName);
+
+		if (!t.isVideo) {
+			return;
+		}
 
 		clearTimeout(t.containerSizeTimeout);
 
@@ -1799,7 +1787,7 @@ Object.assign(_player2.default.prototype, {
 		    handleMouseup = function handleMouseup() {
 			if (mouseIsDown && t.getCurrentTime() !== null && t.newTime.toFixed(4) !== t.getCurrentTime().toFixed(4)) {
 				t.setCurrentTime(t.newTime);
-				t.setCurrentRail();
+				t.setCurrentRailHandle(t.newTime);
 				t.updateCurrent(t.newTime);
 			}
 			if (t.forcedHandlePause) {
@@ -1820,7 +1808,7 @@ Object.assign(_player2.default.prototype, {
 				startedPaused = t.paused;
 			}
 
-			if (t.options.keyActions.length) {
+			if (t.options.enableKeyboard && t.options.keyActions.length) {
 
 				var keyCode = e.which || e.keyCode || 0,
 				    duration = t.getDuration(),
@@ -2199,7 +2187,7 @@ Object.assign(_player2.default.prototype, {
 
 		var duration = t.getDuration();
 
-		if (isNaN(duration) || duration === Infinity || duration < 0) {
+		if (t.media !== undefined && (isNaN(duration) || duration === Infinity || duration < 0)) {
 			t.media.duration = t.options.duration = duration = 0;
 		}
 
@@ -3239,7 +3227,7 @@ Object.assign(_player2.default.prototype, {
 			mouseIsOver = false;
 		});
 		mute.addEventListener('keydown', function (e) {
-			if (t.options.keyActions.length) {
+			if (t.options.enableKeyboard && t.options.keyActions.length) {
 				var keyCode = e.which || e.keyCode || 0,
 				    volume = media.volume;
 
@@ -3331,7 +3319,6 @@ Object.assign(_player2.default.prototype, {
 				if (!modified && !rendered) {
 					if (player.options.startVolume === 0 || media.originalNode.muted) {
 						media.setMuted(true);
-						player.options.startVolume = 0;
 					}
 					media.setVolume(player.options.startVolume);
 					t.setControlsSize();
@@ -5189,11 +5176,12 @@ var MediaElementPlayer = function () {
 
 					delete t.node.autoplay;
 
+					t.node.setAttribute('src', '');
 					if (t.media.canPlayType((0, _media.getTypeFromFile)(src)) !== '') {
 						t.node.setAttribute('src', src);
 					}
 
-					if (~rendererName.indexOf('iframe')) {
+					if (rendererName && rendererName.indexOf('iframe') > -1) {
 						var layer = _document2.default.getElementById(t.media.id + '-iframe-overlay');
 						layer.remove();
 					}
@@ -5240,7 +5228,7 @@ var MediaElementPlayer = function () {
 				t.getElement(t.container).parentNode.insertBefore(t.node, t.getElement(t.container));
 			}
 
-			if (typeof t.media.renderer.destroy === 'function') {
+			if (t.media.renderer && typeof t.media.renderer.destroy === 'function') {
 				t.media.renderer.destroy();
 			}
 
@@ -5464,6 +5452,11 @@ var DefaultPlayer = function () {
 		key: 'duration',
 		get: function get() {
 			return this.getDuration();
+		}
+	}, {
+		key: 'remainingTime',
+		get: function get() {
+			return this.getDuration() - this.currentTime();
 		}
 	}, {
 		key: 'volume',
