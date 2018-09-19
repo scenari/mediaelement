@@ -170,7 +170,6 @@ class MediaElement {
 
 		t.mediaElement.id = id;
 		t.mediaElement.renderers = {};
-		t.mediaElement.events = {};
 		t.mediaElement.promises = [];
 		t.mediaElement.renderer = null;
 		t.mediaElement.rendererName = null;
@@ -446,19 +445,6 @@ class MediaElement {
 		for (let i = 0, total = methods.length; i < total; i++) {
 			assignMethods(methods[i]);
 		}
-
-		/**
-		 *
-		 * @param {Event} event
-		 */
-		t.mediaElement.dispatchEvent = (event) => {
-			const callbacks = t.mediaElement.events[event.type];
-			if (callbacks) {
-				for (let i = 0; i < callbacks.length; i++) {
-					callbacks[i].apply(null, [event]);
-				}
-			}
-		};
 
 		/**
 		 * Remove `mediaelement` completely and restore original media tag
