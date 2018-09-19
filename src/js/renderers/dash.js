@@ -173,7 +173,7 @@ const DashNativeRenderer = {
 						// Basic configuration
 						dashPlayer.getDebug().setLogToBrowserConsole(options.dash.debug);
 						dashPlayer.initialize();
-						dashPlayer.setScheduleWhilePaused(false);
+						if (originalNode.preload != "none") dashPlayer.setScheduleWhilePaused(false);
 						dashPlayer.setFastSwitchEnabled(true);
 						dashPlayer.attachView(node);
 						dashPlayer.setAutoPlay(false);
