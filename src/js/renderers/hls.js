@@ -120,7 +120,10 @@ const HlsNativeRenderer = {
 			assignGettersSetters = (propName) => {
 				const capName = `${propName.substring(0, 1).toUpperCase()}${propName.substring(1)}`;
 
-				node[`get${capName}`] = () => hlsPlayer !== null ? node[propName] : null;
+				node[`get${capName}`] = () => {
+					if (propName == 'readyState') return hlsPlayer !== null ? node[propName] : 0;
+					else return hlsPlayer !== null ? node[propName] : null;
+				};
 
 				node[`set${capName}`] = (value) => {
 					if (mejs.html5media.readOnlyProperties.indexOf(propName) === -1) {

@@ -231,7 +231,7 @@ const YouTubeIframeRenderer = {
 		const
 			youtube = {},
 			apiStack = [],
-			readyState = 4
+			readyState = 0
 		;
 
 		let
@@ -486,7 +486,7 @@ const YouTubeIframeRenderer = {
 						}
 
 						// send init events
-						const initEvents = ['rendererready', 'loadedmetadata', 'loadeddata', 'canplay'];
+						const initEvents = ['rendererready', 'durationchange', 'resize', 'loadedmetadata', 'loadeddata', 'canplay'];
 
 						for (let i = 0, total = initEvents.length; i < total; i++) {
 							const event = createEvent(initEvents[i], youtube);
