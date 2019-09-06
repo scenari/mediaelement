@@ -5553,7 +5553,7 @@ var DashNativeRenderer = {
 	options: {
 		prefix: 'native_dash',
 		dash: {
-			path: 'https://cdn.dashjs.org/latest/dash.all.min.js',
+			path: 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js',
 			debug: false,
 			drm: {},
 
