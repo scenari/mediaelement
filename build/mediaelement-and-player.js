@@ -8,7 +8,7 @@
  * Copyright 2010-2017, John Dyer (http://j.hn/)
  * License: MIT
  *
- */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+ */(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(_dereq_,module,exports){
 
 },{}],2:[function(_dereq_,module,exports){
 (function (global){
@@ -697,6 +697,7 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 
 	t.mediaElement.id = id;
 	t.mediaElement.renderers = {};
+	t.mediaElement.events = {};
 	t.mediaElement.promises = [];
 	t.mediaElement.renderer = null;
 	t.mediaElement.rendererName = null;
@@ -862,7 +863,7 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 	},
 	    triggerAction = function triggerAction(methodName, args) {
 		try {
-			if (methodName === 'play' && t.mediaElement.rendererName === 'native_dash') {
+			if (methodName === 'play' && (t.mediaElement.rendererName === 'native_dash' || t.mediaElement.rendererName === 'native_hls')) {
 				var response = t.mediaElement.renderer[methodName](args);
 				if (response && typeof response.then === 'function') {
 					response.catch(function () {
@@ -920,13 +921,53 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 		assignMethods(methods[_i4]);
 	}
 
+	t.mediaElement.addEventListener = function (eventName, callback) {
+		t.mediaElement.events[eventName] = t.mediaElement.events[eventName] || [];
+
+		t.mediaElement.events[eventName].push(callback);
+	};
+	t.mediaElement.removeEventListener = function (eventName, callback) {
+		if (!eventName) {
+			t.mediaElement.events = {};
+			return true;
+		}
+
+		var callbacks = t.mediaElement.events[eventName];
+
+		if (!callbacks) {
+			return true;
+		}
+
+		if (!callback) {
+			t.mediaElement.events[eventName] = [];
+			return true;
+		}
+
+		for (var _i5 = 0; _i5 < callbacks.length; _i5++) {
+			if (callbacks[_i5] === callback) {
+				t.mediaElement.events[eventName].splice(_i5, 1);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	t.mediaElement.dispatchEvent = function (event) {
+		var callbacks = t.mediaElement.events[event.type];
+		if (callbacks) {
+			for (var _i6 = 0; _i6 < callbacks.length; _i6++) {
+				callbacks[_i6].apply(null, [event]);
+			}
+		}
+	};
+
 	t.mediaElement.destroy = function () {
 		var mediaElement = t.mediaElement.originalNode.cloneNode(true);
 		var wrapper = t.mediaElement.parentElement;
 		mediaElement.removeAttribute('id');
 		mediaElement.remove();
 		t.mediaElement.remove();
-		wrapper.append(mediaElement);
+		wrapper.appendChild(mediaElement);
 	};
 
 	if (mediaFiles.length) {
@@ -976,19 +1017,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mejs = {};
 
-mejs.version = '4.2.9';
+mejs.version = '4.2.12';
 
 mejs.html5media = {
-	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
-	readOnlyProperties: ['duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight'],
+	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
+	readOnlyProperties: ['duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable'],
 
 	methods: ['load', 'play', 'pause', 'canPlayType'],
 
-	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange', 'resize'],
+	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'],
 
-	mouseEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
-
-	mediaTypes: ['audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4', 'video/mp4', 'video/webm', 'video/ogg', 'video/ogv'] };
+	mediaTypes: ['audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4', 'video/mp4', 'video/webm', 'video/ogg', 'video/ogv']
+};
 
 _window2.default.mejs = mejs;
 
@@ -1057,12 +1097,12 @@ var Renderer = function () {
 				});
 			}
 
-			for (var j = 0, jl = mediaFiles.length; j < jl; j++) {
-				for (var i = 0, total = renderers.length; i < total; i++) {
-					var key = renderers[i],
-					    _renderer = this.renderers[key];
+			for (var i = 0, total = renderers.length; i < total; i++) {
+				var key = renderers[i],
+				    _renderer = this.renderers[key];
 
-					if (_renderer !== null && _renderer !== undefined) {
+				if (_renderer !== null && _renderer !== undefined) {
+					for (var j = 0, jl = mediaFiles.length; j < jl; j++) {
 						if (typeof _renderer.canPlayType === 'function' && typeof mediaFiles[j].type === 'string' && _renderer.canPlayType(mediaFiles[j].type)) {
 							return {
 								rendererName: _renderer.name,
@@ -1514,9 +1554,9 @@ var _document = _dereq_(2);
 
 var _document2 = _interopRequireDefault(_document);
 
-var _player = _dereq_(16);
+var _player2 = _dereq_(16);
 
-var _player2 = _interopRequireDefault(_player);
+var _player3 = _interopRequireDefault(_player2);
 
 var _i18n = _dereq_(5);
 
@@ -1530,7 +1570,7 @@ var _dom = _dereq_(26);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-Object.assign(_player.config, {
+Object.assign(_player2.config, {
 	enableProgressTooltip: true,
 
 	useSmoothHover: true,
@@ -1538,7 +1578,7 @@ Object.assign(_player.config, {
 	forceLive: false
 });
 
-Object.assign(_player2.default.prototype, {
+Object.assign(_player3.default.prototype, {
 	buildprogress: function buildprogress(player, controls, layers, media) {
 
 		var lastKeyPressTime = 0,
@@ -1564,7 +1604,10 @@ Object.assign(_player2.default.prototype, {
 						player.startControlsTimer();
 					}
 
-					player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'time-total').focus();
+					var timeSlider = player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'time-total');
+					if (timeSlider) {
+						timeSlider.focus();
+					}
 
 					var newTime = Math.max(player.currentTime - player.options.defaultSeekBackwardInterval(player), 0);
 					player.setCurrentTime(newTime);
@@ -1580,7 +1623,10 @@ Object.assign(_player2.default.prototype, {
 						player.startControlsTimer();
 					}
 
-					player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'time-total').focus();
+					var timeSlider = player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'time-total');
+					if (timeSlider) {
+						timeSlider.focus();
+					}
 
 					var newTime = Math.min(player.currentTime + player.options.defaultSeekForwardInterval(player), player.duration);
 					player.setCurrentTime(newTime);
@@ -1659,7 +1705,7 @@ Object.assign(_player2.default.prototype, {
 
 				pos = x - offsetStyles.left;
 				percentage = pos / width;
-				t.newTime = percentage <= 0.02 ? 0 : percentage * t.getDuration();
+				t.newTime = percentage * t.getDuration();
 
 				if (mouseIsDown && t.getCurrentTime() !== null && t.newTime.toFixed(4) !== t.getCurrentTime().toFixed(4)) {
 					t.setCurrentRailHandle(t.newTime);
@@ -1727,7 +1773,7 @@ Object.assign(_player2.default.prototype, {
 			if (media.paused) {
 				t.slider.setAttribute('aria-label', timeSliderText);
 				t.slider.setAttribute('aria-valuemin', 0);
-				t.slider.setAttribute('aria-valuemax', duration);
+				t.slider.setAttribute('aria-valuemax', isNaN(duration) ? 0 : duration);
 				t.slider.setAttribute('aria-valuenow', seconds);
 				t.slider.setAttribute('aria-valuetext', time);
 			} else {
@@ -1828,7 +1874,7 @@ Object.assign(_player2.default.prototype, {
 						return;
 				}
 
-				seekTime = seekTime < 0 ? 0 : seekTime >= duration ? duration : Math.floor(seekTime);
+				seekTime = seekTime < 0 || isNaN(seekTime) ? 0 : seekTime >= duration ? duration : Math.floor(seekTime);
 				lastKeyPressTime = new Date();
 				if (!startedPaused) {
 					player.pause();
@@ -1927,7 +1973,7 @@ Object.assign(_player2.default.prototype, {
 					player.setCurrentRail(e);
 				}
 				updateSlider();
-			} else if (!broadcast || t.options.forceLive) {
+			} else if (!broadcast && t.options.forceLive) {
 				var label = _document2.default.createElement('span');
 				label.className = t.options.classPrefix + 'broadcast';
 				label.innerText = _i18n2.default.t('mejs.live-broadcast');
@@ -2991,7 +3037,7 @@ Object.assign(_player2.default.prototype, {
 			keys: [38],
 			action: function action(player) {
 				var volumeSlider = player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider');
-				if (volumeSlider || player.getElement(player.container).querySelector('.' + _player.config.classPrefix + 'volume-slider').matches(':focus')) {
+				if (volumeSlider && volumeSlider.matches(':focus')) {
 					volumeSlider.style.display = 'block';
 				}
 				if (player.isVideo) {
@@ -3048,6 +3094,7 @@ Object.assign(_player2.default.prototype, {
 			anchor.setAttribute('aria-label', _i18n2.default.t('mejs.volume-slider'));
 			anchor.setAttribute('aria-valuemin', 0);
 			anchor.setAttribute('aria-valuemax', 100);
+			anchor.setAttribute('aria-valuenow', 100);
 			anchor.setAttribute('role', 'slider');
 			anchor.innerHTML += '<span class="' + t.options.classPrefix + 'offscreen">' + volumeControlText + '</span>' + ('<div class="' + t.options.classPrefix + 'horizontal-volume-total">') + ('<div class="' + t.options.classPrefix + 'horizontal-volume-current"></div>') + ('<div class="' + t.options.classPrefix + 'horizontal-volume-handle"></div>') + '</div>';
 			mute.parentNode.insertBefore(anchor, mute.nextSibling);
@@ -3729,7 +3776,7 @@ var MediaElementPlayer = function () {
 									tracks.push(childNode);
 									break;
 								default:
-									cloneNode.appendChild(childNode);
+									cloneNode.appendChild(childNode.cloneNode(true));
 									break;
 							}
 						})();
@@ -5461,11 +5508,11 @@ var _player2 = _interopRequireDefault(_player);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (typeof jQuery !== 'undefined') {
-	_mejs2.default.$ = _window2.default.jQuery = _window2.default.$ = jQuery;
+	_mejs2.default.$ = jQuery;
 } else if (typeof Zepto !== 'undefined') {
-	_mejs2.default.$ = _window2.default.Zepto = _window2.default.$ = Zepto;
+	_mejs2.default.$ = Zepto;
 } else if (typeof ender !== 'undefined') {
-	_mejs2.default.$ = _window2.default.ender = _window2.default.$ = ender;
+	_mejs2.default.$ = ender;
 }
 
 (function ($) {
@@ -5530,7 +5577,7 @@ var NativeDash = {
 				NativeDash._createPlayer(settings);
 			});
 		} else {
-			settings.options.path = typeof settings.options.path === 'string' ? settings.options.path : 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js';
+			settings.options.path = typeof settings.options.path === 'string' ? settings.options.path : 'https://cdn.dashjs.org/latest/dash.all.min.js';
 
 			NativeDash.promise = NativeDash.promise || (0, _dom.loadScript)(settings.options.path);
 			NativeDash.promise.then(function () {
@@ -5553,7 +5600,7 @@ var DashNativeRenderer = {
 	options: {
 		prefix: 'native_dash',
 		dash: {
-			path: 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js',
+			path: 'https://cdn.dashjs.org/latest/dash.all.min.js',
 			debug: false,
 			drm: {},
 
@@ -5584,7 +5631,7 @@ var DashNativeRenderer = {
 		options = Object.assign(options, mediaElement.options);
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -5595,7 +5642,7 @@ var DashNativeRenderer = {
 			var capName = '' + propName.substring(0, 1).toUpperCase() + propName.substring(1);
 
 			node['get' + capName] = function () {
-				if (propName == 'readyState') return dashPlayer !== null ? node[propName] : 0;else return dashPlayer !== null ? node[propName] : null;
+				return dashPlayer !== null ? node[propName] : null;
 			};
 
 			node['set' + capName] = function (value) {
@@ -5625,7 +5672,7 @@ var DashNativeRenderer = {
 							}
 						}
 					} else {
-						node[propName] = value;
+						if (value > 0) node[propName] = value;
 					}
 				}
 			};
@@ -5641,10 +5688,7 @@ var DashNativeRenderer = {
 			var dashEvents = dashjs.MediaPlayer.events,
 			    assignEvents = function assignEvents(eventName) {
 				if (eventName === 'loadedmetadata') {
-					dashPlayer.getDebug().setLogToBrowserConsole(options.dash.debug);
 					dashPlayer.initialize();
-					if (originalNode.preload == "none") dashPlayer.setScheduleWhilePaused(false);
-					dashPlayer.setFastSwitchEnabled(true);
 					dashPlayer.attachView(node);
 					dashPlayer.setAutoPlay(false);
 
@@ -6270,7 +6314,7 @@ var FlvNativeRenderer = {
 		options = Object.assign(options, mediaElement.options);
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6310,7 +6354,7 @@ var FlvNativeRenderer = {
 							flvPlayer.load();
 						}
 					} else {
-						node[propName] = value;
+						if (value > 0) node[propName] = value;
 					}
 				}
 			};
@@ -6494,7 +6538,7 @@ var HlsNativeRenderer = {
 	options: {
 		prefix: 'native_hls',
 		hls: {
-			path: 'https://cdn.jsdelivr.net/npm/hls.js@0.12.4',
+			path: 'https://cdn.jsdelivr.net/npm/hls.js@latest',
 
 			autoStartLoad: false,
 			debug: false
@@ -6522,7 +6566,7 @@ var HlsNativeRenderer = {
 		options.hls.autoStartLoad = preload && preload !== 'none' || autoplay;
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6533,7 +6577,7 @@ var HlsNativeRenderer = {
 			var capName = '' + propName.substring(0, 1).toUpperCase() + propName.substring(1);
 
 			node['get' + capName] = function () {
-				if (propName == 'readyState') return hlsPlayer !== null ? node[propName] : 0;else return hlsPlayer !== null ? node[propName] : null;
+				return hlsPlayer !== null ? node[propName] : null;
 			};
 
 			node['set' + capName] = function (value) {
@@ -6553,7 +6597,7 @@ var HlsNativeRenderer = {
 							hlsPlayer.attachMedia(node);
 						}
 					} else {
-						node[propName] = value;
+						if (value > 0) node[propName] = value;
 					}
 				}
 			};
@@ -6627,12 +6671,12 @@ var HlsNativeRenderer = {
 								hlsPlayer.destroy();
 								break;
 						}
+						return;
 					}
-				} else {
-					var _event = (0, _general.createEvent)(name, mediaElement);
-					_event.data = data;
-					mediaElement.dispatchEvent(_event);
 				}
+				var event = (0, _general.createEvent)(name, mediaElement);
+				event.data = data;
+				mediaElement.dispatchEvent(event);
 			};
 
 			var _loop = function _loop(eventType) {
@@ -6791,7 +6835,7 @@ var HtmlMediaElement = {
 
 			node['set' + capName] = function (value) {
 				if (_mejs2.default.html5media.readOnlyProperties.indexOf(propName) === -1) {
-					node[propName] = value;
+					if (value > 0) node[propName] = value;
 				}
 			};
 		};
@@ -6800,7 +6844,7 @@ var HtmlMediaElement = {
 			assignGettersSetters(props[i]);
 		}
 
-		var events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
+		var events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
 			return e !== 'error';
 		}),
 		    assignEvents = function assignEvents(eventName) {
@@ -7031,7 +7075,7 @@ var YouTubeIframeRenderer = {
 
 		var youtube = {},
 		    apiStack = [],
-		    readyState = 0;
+		    readyState = 4;
 
 		var youTubeApi = null,
 		    paused = true,
@@ -7060,6 +7104,8 @@ var YouTubeIframeRenderer = {
 						case 'volume':
 							volume = youTubeApi.getVolume() / 100;
 							return volume;
+						case 'playbackRate':
+							return youTubeApi.getPlaybackRate();
 						case 'paused':
 							return paused;
 						case 'ended':
@@ -7122,6 +7168,13 @@ var YouTubeIframeRenderer = {
 							youTubeApi.setVolume(value * 100);
 							setTimeout(function () {
 								var event = (0, _general.createEvent)('volumechange', youtube);
+								mediaElement.dispatchEvent(event);
+							}, 50);
+							break;
+						case 'playbackRate':
+							youTubeApi.setPlaybackRate(value);
+							setTimeout(function () {
+								var event = (0, _general.createEvent)('ratechange', youtube);
 								mediaElement.dispatchEvent(event);
 							}, 50);
 							break;
@@ -7260,7 +7313,7 @@ var YouTubeIframeRenderer = {
 						youTubeIframe.addEventListener(events[_i3], assignEvents, false);
 					}
 
-					var initEvents = ['rendererready', 'durationchange', 'resize', 'loadedmetadata', 'loadeddata', 'canplay'];
+					var initEvents = ['rendererready', 'loadedmetadata', 'loadeddata', 'canplay'];
 
 					for (var _i4 = 0, _total4 = initEvents.length; _i4 < _total4; _i4++) {
 						var event = (0, _general.createEvent)(initEvents[_i4], youtube);
@@ -7435,7 +7488,22 @@ var IS_FIREFOX = exports.IS_FIREFOX = /firefox/i.test(UA);
 var IS_SAFARI = exports.IS_SAFARI = /safari/i.test(UA) && !IS_CHROME;
 var IS_STOCK_ANDROID = exports.IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA);
 var HAS_MSE = exports.HAS_MSE = 'MediaSource' in _window2.default;
-var SUPPORT_POINTER_EVENTS = exports.SUPPORT_POINTER_EVENTS = true;
+var SUPPORT_POINTER_EVENTS = exports.SUPPORT_POINTER_EVENTS = function () {
+	var element = _document2.default.createElement('x'),
+	    documentElement = _document2.default.documentElement,
+	    getComputedStyle = _window2.default.getComputedStyle;
+
+	if (!('pointerEvents' in element.style)) {
+		return false;
+	}
+
+	element.style.pointerEvents = 'auto';
+	element.style.pointerEvents = 'x';
+	documentElement.appendChild(element);
+	var supports = getComputedStyle && (getComputedStyle(element, '') || {}).pointerEvents === 'auto';
+	element.remove();
+	return !!supports;
+}();
 
 var SUPPORT_PASSIVE_EVENT = exports.SUPPORT_PASSIVE_EVENT = function () {
 	var supportsPassive = false;

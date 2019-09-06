@@ -94,7 +94,7 @@ Object.assign(MediaElementPlayer.prototype, {
 			keys: [38], // UP
 			action: (player) => {
 				const volumeSlider = player.getElement(player.container).querySelector(`.${config.classPrefix}volume-slider`);
-				if (volumeSlider || player.getElement(player.container).querySelector(`.${config.classPrefix}volume-slider`).matches(':focus')) {
+				if (volumeSlider && volumeSlider.matches(':focus')) {
 					volumeSlider.style.display = 'block';
 				}
 				if (player.isVideo) {
@@ -156,6 +156,7 @@ Object.assign(MediaElementPlayer.prototype, {
 			anchor.setAttribute('aria-label', i18n.t('mejs.volume-slider'));
 			anchor.setAttribute('aria-valuemin', 0);
 			anchor.setAttribute('aria-valuemax', 100);
+			anchor.setAttribute('aria-valuenow', 100);
 			anchor.setAttribute('role', 'slider');
 			anchor.innerHTML += `<span class="${t.options.classPrefix}offscreen">${volumeControlText}</span>` +
 				`<div class="${t.options.classPrefix}horizontal-volume-total">` +

@@ -154,7 +154,7 @@ const DashNativeRenderer = {
 								}
 							}
 						} else {
-							node[propName] = value;
+							if (value > 0) node[propName] = value;
 						}
 					}
 				};
@@ -174,10 +174,7 @@ const DashNativeRenderer = {
 				assignEvents = (eventName) => {
 					if (eventName === 'loadedmetadata') {
 						// Basic configuration
-						dashPlayer.getDebug().setLogToBrowserConsole(options.dash.debug);
 						dashPlayer.initialize();
-						if (originalNode.preload == "none") dashPlayer.setScheduleWhilePaused(false);
-						dashPlayer.setFastSwitchEnabled(true);
 						dashPlayer.attachView(node);
 						dashPlayer.setAutoPlay(false);
 

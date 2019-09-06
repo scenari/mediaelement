@@ -142,7 +142,7 @@ const HlsNativeRenderer = {
 								hlsPlayer.attachMedia(node);
 							}
 						} else {
-							node[propName] = value;
+							if (value > 0) node[propName] = value;
 						}
 					}
 				};
@@ -229,12 +229,12 @@ const HlsNativeRenderer = {
 								hlsPlayer.destroy();
 								break;
 						}
+						return;
 					}
-				} else {
-					const event = createEvent(name, mediaElement);
-					event.data = data;
-					mediaElement.dispatchEvent(event);
 				}
+				const event = createEvent(name, mediaElement);
+				event.data = data;
+				mediaElement.dispatchEvent(event);
 			};
 
 			for (const eventType in hlsEvents) {
