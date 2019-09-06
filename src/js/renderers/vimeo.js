@@ -319,13 +319,24 @@ const vimeoIframeRenderer = {
 						}
 					}
 
+					events = ['loadedmetadata', 'durationchange', 'loadeddata', 'canplay'];
+
+					for (let i = 0, total = events.length; i < total; i++) {
+						const event = mejs.Utils.createEvent(events[i], vimeo);
+						mediaElement.dispatchEvent(event);
+					}
+
 				}).catch((error) => {
 					errorHandler(error, vimeo);
 				});
 			});
 			vimeoPlayer.on('progress', () => {
 				vimeoPlayer.getDuration().then((loadProgress) => {
-					duration = loadProgress;
+					if (loadProgress != duration) {
+						duration = loadProgress;
+						const event = mejs.Utils.createEvent('durationchange', vimeo);
+						mediaElement.dispatchEvent(event);
+					}
 
 					if (duration > 0) {
 						bufferedTime = duration * loadProgress;
@@ -374,12 +385,8 @@ const vimeoIframeRenderer = {
 				mediaElement.dispatchEvent(event);
 			});
 
-			events = ['rendererready', 'loadedmetadata', 'loadeddata', 'canplay'];
-
-			for (let i = 0, total = events.length; i < total; i++) {
-				const event = mejs.Utils.createEvent(events[i], vimeo);
-				mediaElement.dispatchEvent(event);
-			}
+			const event = mejs.Utils.createEvent('rendererready', vimeo);
+			mediaElement.dispatchEvent(event);
 		};
 
 		const
