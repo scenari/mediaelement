@@ -1282,7 +1282,7 @@ var NativeDash = {
 				NativeDash._createPlayer(settings);
 			});
 		} else {
-			settings.options.path = typeof settings.options.path === 'string' ? settings.options.path : 'https://cdn.dashjs.org/latest/dash.all.min.js';
+			settings.options.path = typeof settings.options.path === 'string' ? settings.options.path : 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js';
 
 			NativeDash.promise = NativeDash.promise || (0, _dom.loadScript)(settings.options.path);
 			NativeDash.promise.then(function () {
@@ -1555,7 +1555,7 @@ var HlsNativeRenderer = {
 	options: {
 		prefix: 'native_hls',
 		hls: {
-			path: 'https://cdn.jsdelivr.net/npm/hls.js@latest',
+			path: 'https://cdn.jsdelivr.net/npm/hls.js@0.12.4',
 
 			autoStartLoad: false,
 			debug: false

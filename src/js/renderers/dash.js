@@ -35,7 +35,7 @@ const NativeDash = {
 			});
 		} else {
 			settings.options.path = typeof settings.options.path === 'string' ?
-				settings.options.path : 'https://cdn.dashjs.org/latest/dash.all.min.js';
+				settings.options.path : 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js';
 
 			NativeDash.promise = NativeDash.promise || loadScript(settings.options.path);
 			NativeDash.promise.then(() => {

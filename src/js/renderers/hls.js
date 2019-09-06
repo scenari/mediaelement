@@ -65,7 +65,7 @@ const HlsNativeRenderer = {
 		prefix: 'native_hls',
 		hls: {
 			// Special config: used to set the local path/URL of hls.js library
-			path: 'https://cdn.jsdelivr.net/npm/hls.js@latest',
+			path: 'https://cdn.jsdelivr.net/npm/hls.js@0.12.4',
 			// To modify more elements from hls.js,
 			// see https://github.com/video-dev/hls.js/blob/master/doc/API.md#fine-tuning
 			autoStartLoad: false,
