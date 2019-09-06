@@ -790,12 +790,12 @@ var Renderer = function () {
 				});
 			}
 
-			for (var i = 0, total = renderers.length; i < total; i++) {
-				var key = renderers[i],
-				    _renderer = this.renderers[key];
+			for (var j = 0, jl = mediaFiles.length; j < jl; j++) {
+				for (var i = 0, total = renderers.length; i < total; i++) {
+					var key = renderers[i],
+					    _renderer = this.renderers[key];
 
-				if (_renderer !== null && _renderer !== undefined) {
-					for (var j = 0, jl = mediaFiles.length; j < jl; j++) {
+					if (_renderer !== null && _renderer !== undefined) {
 						if (typeof _renderer.canPlayType === 'function' && typeof mediaFiles[j].type === 'string' && _renderer.canPlayType(mediaFiles[j].type)) {
 							return {
 								rendererName: _renderer.name,

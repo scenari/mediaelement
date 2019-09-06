@@ -68,14 +68,14 @@ class Renderer {
 			});
 		}
 
-		for (let i = 0, total = renderers.length; i < total; i++) {
-			const
-				key = renderers[i],
-				renderer = this.renderers[key]
-			;
+		for (let j = 0, jl = mediaFiles.length; j < jl; j++) {
+			for (let i = 0, total = renderers.length; i < total; i++) {
+				const
+					key = renderers[i],
+					renderer = this.renderers[key]
+				;
 
-			if (renderer !== null && renderer !== undefined) {
-				for (let j = 0, jl = mediaFiles.length; j < jl; j++) {
+				if (renderer !== null && renderer !== undefined) {
 					if (typeof renderer.canPlayType === 'function' && typeof mediaFiles[j].type === 'string' &&
 						renderer.canPlayType(mediaFiles[j].type)) {
 						return {
