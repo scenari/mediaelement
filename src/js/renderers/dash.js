@@ -35,7 +35,7 @@ const NativeDash = {
 			});
 		} else {
 			settings.options.path = typeof settings.options.path === 'string' ?
-				settings.options.path : 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js';
+				settings.options.path : 'https://cdn.dashjs.org/latest/dash.all.min.js';
 
 			NativeDash.promise = NativeDash.promise || loadScript(settings.options.path);
 			NativeDash.promise.then(() => {
@@ -64,7 +64,7 @@ const DashNativeRenderer = {
 		prefix: 'native_dash',
 		dash: {
 			// Special config: used to set the local path/URL of dash.js player library
-			path: 'https://cdn.dashjs.org/v2.9.3/dash.all.min.js',
+			path: 'https://cdn.dashjs.org/latest/dash.all.min.js',
 			debug: false,
 			drm: {},
 			// Robustness level for video and audio capabilities.

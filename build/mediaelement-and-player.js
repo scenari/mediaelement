@@ -8,7 +8,7 @@
  * Copyright 2010-2017, John Dyer (http://j.hn/)
  * License: MIT
  *
- */(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(_dereq_,module,exports){
+ */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 
 },{}],2:[function(_dereq_,module,exports){
 (function (global){
@@ -697,7 +697,6 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 
 	t.mediaElement.id = id;
 	t.mediaElement.renderers = {};
-	t.mediaElement.events = {};
 	t.mediaElement.promises = [];
 	t.mediaElement.renderer = null;
 	t.mediaElement.rendererName = null;
@@ -921,46 +920,6 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 		assignMethods(methods[_i4]);
 	}
 
-	t.mediaElement.addEventListener = function (eventName, callback) {
-		t.mediaElement.events[eventName] = t.mediaElement.events[eventName] || [];
-
-		t.mediaElement.events[eventName].push(callback);
-	};
-	t.mediaElement.removeEventListener = function (eventName, callback) {
-		if (!eventName) {
-			t.mediaElement.events = {};
-			return true;
-		}
-
-		var callbacks = t.mediaElement.events[eventName];
-
-		if (!callbacks) {
-			return true;
-		}
-
-		if (!callback) {
-			t.mediaElement.events[eventName] = [];
-			return true;
-		}
-
-		for (var _i5 = 0; _i5 < callbacks.length; _i5++) {
-			if (callbacks[_i5] === callback) {
-				t.mediaElement.events[eventName].splice(_i5, 1);
-				return true;
-			}
-		}
-		return false;
-	};
-
-	t.mediaElement.dispatchEvent = function (event) {
-		var callbacks = t.mediaElement.events[event.type];
-		if (callbacks) {
-			for (var _i6 = 0; _i6 < callbacks.length; _i6++) {
-				callbacks[_i6].apply(null, [event]);
-			}
-		}
-	};
-
 	t.mediaElement.destroy = function () {
 		var mediaElement = t.mediaElement.originalNode.cloneNode(true);
 		var wrapper = t.mediaElement.parentElement;
@@ -1020,15 +979,16 @@ var mejs = {};
 mejs.version = '4.2.12';
 
 mejs.html5media = {
-	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
-	readOnlyProperties: ['duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable'],
+	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
+	readOnlyProperties: ['duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight'],
 
 	methods: ['load', 'play', 'pause', 'canPlayType'],
 
-	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange'],
+	events: ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'play', 'playing', 'pause', 'waiting', 'seeking', 'seeked', 'timeupdate', 'ended', 'ratechange', 'volumechange', 'resize'],
 
-	mediaTypes: ['audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4', 'video/mp4', 'video/webm', 'video/ogg', 'video/ogv']
-};
+	mouseEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
+
+	mediaTypes: ['audio/mp3', 'audio/ogg', 'audio/oga', 'audio/wav', 'audio/x-wav', 'audio/wave', 'audio/x-pn-wav', 'audio/mpeg', 'audio/mp4', 'video/mp4', 'video/webm', 'video/ogg', 'video/ogv'] };
 
 _window2.default.mejs = mejs;
 
@@ -1097,12 +1057,12 @@ var Renderer = function () {
 				});
 			}
 
-			for (var i = 0, total = renderers.length; i < total; i++) {
-				var key = renderers[i],
-				    _renderer = this.renderers[key];
+			for (var j = 0, jl = mediaFiles.length; j < jl; j++) {
+				for (var i = 0, total = renderers.length; i < total; i++) {
+					var key = renderers[i],
+					    _renderer = this.renderers[key];
 
-				if (_renderer !== null && _renderer !== undefined) {
-					for (var j = 0, jl = mediaFiles.length; j < jl; j++) {
+					if (_renderer !== null && _renderer !== undefined) {
 						if (typeof _renderer.canPlayType === 'function' && typeof mediaFiles[j].type === 'string' && _renderer.canPlayType(mediaFiles[j].type)) {
 							return {
 								rendererName: _renderer.name,
@@ -5631,7 +5591,7 @@ var DashNativeRenderer = {
 		options = Object.assign(options, mediaElement.options);
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -5642,7 +5602,7 @@ var DashNativeRenderer = {
 			var capName = '' + propName.substring(0, 1).toUpperCase() + propName.substring(1);
 
 			node['get' + capName] = function () {
-				return dashPlayer !== null ? node[propName] : null;
+				if (propName == 'readyState') return dashPlayer !== null ? node[propName] : 0;else return dashPlayer !== null ? node[propName] : null;
 			};
 
 			node['set' + capName] = function (value) {
@@ -5672,7 +5632,7 @@ var DashNativeRenderer = {
 							}
 						}
 					} else {
-						if (value > 0) node[propName] = value;
+						node[propName] = value;
 					}
 				}
 			};
@@ -6314,7 +6274,7 @@ var FlvNativeRenderer = {
 		options = Object.assign(options, mediaElement.options);
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6354,7 +6314,7 @@ var FlvNativeRenderer = {
 							flvPlayer.load();
 						}
 					} else {
-						if (value > 0) node[propName] = value;
+						node[propName] = value;
 					}
 				}
 			};
@@ -6538,7 +6498,7 @@ var HlsNativeRenderer = {
 	options: {
 		prefix: 'native_hls',
 		hls: {
-			path: 'https://cdn.jsdelivr.net/npm/hls.js@latest',
+			path: 'https://cdn.jsdelivr.net/npm/hls.js@0.12.4',
 
 			autoStartLoad: false,
 			debug: false
@@ -6566,7 +6526,7 @@ var HlsNativeRenderer = {
 		options.hls.autoStartLoad = preload && preload !== 'none' || autoplay;
 
 		var props = _mejs2.default.html5media.properties,
-		    events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		    events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    attachNativeEvents = function attachNativeEvents(e) {
@@ -6577,7 +6537,7 @@ var HlsNativeRenderer = {
 			var capName = '' + propName.substring(0, 1).toUpperCase() + propName.substring(1);
 
 			node['get' + capName] = function () {
-				return hlsPlayer !== null ? node[propName] : null;
+				if (propName == 'readyState') return hlsPlayer !== null ? node[propName] : 0;else return hlsPlayer !== null ? node[propName] : null;
 			};
 
 			node['set' + capName] = function (value) {
@@ -6597,7 +6557,7 @@ var HlsNativeRenderer = {
 							hlsPlayer.attachMedia(node);
 						}
 					} else {
-						if (value > 0) node[propName] = value;
+						node[propName] = value;
 					}
 				}
 			};
@@ -6835,7 +6795,7 @@ var HtmlMediaElement = {
 
 			node['set' + capName] = function (value) {
 				if (_mejs2.default.html5media.readOnlyProperties.indexOf(propName) === -1) {
-					if (value > 0) node[propName] = value;
+					node[propName] = value;
 				}
 			};
 		};
@@ -6844,7 +6804,7 @@ var HtmlMediaElement = {
 			assignGettersSetters(props[i]);
 		}
 
-		var events = _mejs2.default.html5media.events.concat(['click', 'mouseover', 'mouseout']).filter(function (e) {
+		var events = _mejs2.default.html5media.events.concat(_mejs2.default.html5media.mouseEvents).filter(function (e) {
 			return e !== 'error';
 		}),
 		    assignEvents = function assignEvents(eventName) {
@@ -7075,7 +7035,7 @@ var YouTubeIframeRenderer = {
 
 		var youtube = {},
 		    apiStack = [],
-		    readyState = 4;
+		    readyState = 0;
 
 		var youTubeApi = null,
 		    paused = true,
@@ -7313,7 +7273,7 @@ var YouTubeIframeRenderer = {
 						youTubeIframe.addEventListener(events[_i3], assignEvents, false);
 					}
 
-					var initEvents = ['rendererready', 'loadedmetadata', 'loadeddata', 'canplay'];
+					var initEvents = ['rendererready', 'durationchange', 'resize', 'loadedmetadata', 'loadeddata', 'canplay'];
 
 					for (var _i4 = 0, _total4 = initEvents.length; _i4 < _total4; _i4++) {
 						var event = (0, _general.createEvent)(initEvents[_i4], youtube);
@@ -7488,22 +7448,7 @@ var IS_FIREFOX = exports.IS_FIREFOX = /firefox/i.test(UA);
 var IS_SAFARI = exports.IS_SAFARI = /safari/i.test(UA) && !IS_CHROME;
 var IS_STOCK_ANDROID = exports.IS_STOCK_ANDROID = /^mozilla\/\d+\.\d+\s\(linux;\su;/i.test(UA);
 var HAS_MSE = exports.HAS_MSE = 'MediaSource' in _window2.default;
-var SUPPORT_POINTER_EVENTS = exports.SUPPORT_POINTER_EVENTS = function () {
-	var element = _document2.default.createElement('x'),
-	    documentElement = _document2.default.documentElement,
-	    getComputedStyle = _window2.default.getComputedStyle;
-
-	if (!('pointerEvents' in element.style)) {
-		return false;
-	}
-
-	element.style.pointerEvents = 'auto';
-	element.style.pointerEvents = 'x';
-	documentElement.appendChild(element);
-	var supports = getComputedStyle && (getComputedStyle(element, '') || {}).pointerEvents === 'auto';
-	element.remove();
-	return !!supports;
-}();
+var SUPPORT_POINTER_EVENTS = exports.SUPPORT_POINTER_EVENTS = true;
 
 var SUPPORT_PASSIVE_EVENT = exports.SUPPORT_PASSIVE_EVENT = function () {
 	var supportsPassive = false;

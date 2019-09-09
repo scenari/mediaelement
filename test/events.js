@@ -1,8 +1,8 @@
 'use strict';
 (function() {
 	const ME_URI = '../build';
-	const HLS_URI  = 'https://cdnjs.cloudflare.com/ajax/libs/hls.js/0.9.1/hls.js';
-	const DASH_URI = 'https://cdnjs.cloudflare.com/ajax/libs/dashjs/2.9.0/dash.all.debug.js';
+	const HLS_URI  = 'https://cdn.jsdelivr.net/npm/hls.js@0.12.4';
+	const DASH_URI = 'https://cdn.dashjs.org/latest/dash.all.min.js';
 	var container;
 	var preload;
 
@@ -28,7 +28,7 @@
 			});
 		});
 	}
-	
+
 	var meImported = false;
 	function initME(src) {
 		if (!meImported) meImported = importScript(ME_URI + '/mediaelement.js');
@@ -55,7 +55,7 @@
 			});
 		})
 	}
-	
+
 	var hlsImported = false;
 	function initHLS(src) {
 		if (!hlsImported) hlsImported = importScript(HLS_URI);
@@ -97,7 +97,7 @@
 				});
 
 				dash.initialize(media, src, false);
-				if (preload != "none") dash.setScheduleWhilePaused(true);
+				dash.updateSettings({ 'streaming': { 'scheduleWhilePaused': preload != 'none' } });
 				dash.updatePortalSize();
 				dash.duration();
 			});
@@ -294,7 +294,6 @@
 		container = document.getElementById('container');
 		let params = (new URL(document.location)).searchParams;
 		let backend = params.has('backend') ? params.get('backend') : 'native';
-		preload = params.has('preload') ? params.get('preload') : 'metadata';
 		let src = params.has('src') ? params.get('src') : 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Big_Buck_Bunny_4K.webm';
 		suite(backends[backend], src);
 		mocha.run();
