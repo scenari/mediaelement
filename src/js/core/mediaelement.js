@@ -379,7 +379,9 @@ class MediaElement {
 				// At least there must be a media in the `mediaFiles` since the media tag can come up an
 				// empty source for starters
 				if (renderInfo === null && mediaFiles[0].src) {
-					t.mediaElement.generateError('No renderer found', mediaFiles);
+					setTimeout(function() {
+						t.mediaElement.generateError('No renderer found', mediaFiles);
+					});
 					return;
 				}
 
