@@ -579,7 +579,7 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 		var renderInfo = _renderer.renderer.select(mediaFiles, t.mediaElement.options.renderers.length ? t.mediaElement.options.renderers : []),
 		    event = void 0;
 
-		if (!t.mediaElement.paused) {
+		if (!t.mediaElement.paused && !(t.mediaElement.src == null || t.mediaElement.src === '')) {
 			t.mediaElement.pause();
 			event = (0, _general.createEvent)('pause', t.mediaElement);
 			t.mediaElement.dispatchEvent(event);
@@ -587,15 +587,18 @@ var MediaElement = function MediaElement(idOrNode, options, sources) {
 		t.mediaElement.originalNode.src = mediaFiles[0].src || '';
 
 		if (renderInfo === null && mediaFiles[0].src) {
-			t.mediaElement.generateError('No renderer found', mediaFiles);
+			setTimeout(function () {
+				t.mediaElement.generateError('No renderer found', mediaFiles);
+			});
 			return;
 		}
 
-		return mediaFiles[0].src ? t.mediaElement.changeRenderer(renderInfo.rendererName, mediaFiles) : null;
+		var shouldChangeRenderer = !(mediaFiles[0].src == null || mediaFiles[0].src === '');
+		return shouldChangeRenderer ? t.mediaElement.changeRenderer(renderInfo.rendererName, mediaFiles) : null;
 	},
 	    triggerAction = function triggerAction(methodName, args) {
 		try {
-			if (methodName === 'play' && (t.mediaElement.rendererName === 'native_dash' || t.mediaElement.rendererName === 'native_hls')) {
+			if (methodName === 'play' && (t.mediaElement.rendererName === 'native_dash' || t.mediaElement.rendererName === 'native_hls' || t.mediaElement.rendererName === 'vimeo_iframe')) {
 				var response = t.mediaElement.renderer[methodName](args);
 				if (response && typeof response.then === 'function') {
 					response.catch(function () {
@@ -709,7 +712,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mejs = {};
 
-mejs.version = '4.2.12';
+mejs.version = '4.2.16';
 
 mejs.html5media = {
 	properties: ['volume', 'src', 'currentTime', 'muted', 'duration', 'paused', 'ended', 'buffered', 'error', 'networkState', 'readyState', 'seeking', 'seekable', 'videoWidth', 'videoHeight', 'currentSrc', 'preload', 'bufferedBytes', 'bufferedTime', 'initialTime', 'startOffsetTime', 'defaultPlaybackRate', 'playbackRate', 'played', 'autoplay', 'loop', 'controls'],
@@ -1906,7 +1909,7 @@ var HtmlMediaElement = {
 		}
 
 		node.addEventListener('error', function (e) {
-			if (e.target.error.code === 4 && isActive) {
+			if (e && e.target && e.target.error && e.target.error.code === 4 && isActive) {
 				if (index < total && mediaFiles[index + 1] !== undefined) {
 					node.src = mediaFiles[index++].src;
 					node.load();
@@ -1953,13 +1956,29 @@ var VimeoApi = {
 	},
 
 	getVimeoId: function getVimeoId(url) {
-		if (url === undefined || url === null) {
+		if (url == null) {
 			return null;
 		}
 
 		var parts = url.split('?');
 		url = parts[0];
-		return parseInt(url.substring(url.lastIndexOf('/') + 1), 10);
+
+		var playerLinkMatch = url.match(/https:\/\/player.vimeo.com\/video\/(\d+)$/);
+		if (playerLinkMatch) {
+			return parseInt(playerLinkMatch[1], 10);
+		}
+
+		var vimeoLinkMatch = url.match(/https:\/\/vimeo.com\/(\d+)$/);
+		if (vimeoLinkMatch) {
+			return parseInt(vimeoLinkMatch[1], 10);
+		}
+
+		var privateVimeoLinkMatch = url.match(/https:\/\/vimeo.com\/(\d+)\/\w+$/);
+		if (privateVimeoLinkMatch) {
+			return parseInt(privateVimeoLinkMatch[1], 10);
+		}
+
+		return NaN;
 	}
 };
 
@@ -2698,7 +2717,7 @@ var YouTubeIframeRenderer = {
 				html5: 1,
 				iv_load_policy: 3
 			}, youtube.options.youtube),
-			origin: _window2.default.location.host,
+			origin: _window2.default.location.href,
 			events: {
 				onReady: function onReady(e) {
 					mediaElement.youTubeApi = youTubeApi = e.target;
@@ -2937,7 +2956,7 @@ for (var i = 0, total = html5Elements.length; i < total; i++) {
 	video = _document2.default.createElement(html5Elements[i]);
 }
 
-var SUPPORTS_NATIVE_HLS = exports.SUPPORTS_NATIVE_HLS = IS_SAFARI || IS_ANDROID && (IS_CHROME || IS_STOCK_ANDROID) || IS_IE && /edge/i.test(UA);
+var SUPPORTS_NATIVE_HLS = exports.SUPPORTS_NATIVE_HLS = IS_SAFARI || IS_IE && /edge/i.test(UA);
 
 var hasiOSFullScreen = video.webkitEnterFullscreen !== undefined;
 
@@ -2972,7 +2991,7 @@ if (hasTrueNativeFullScreen) {
 	if (hasWebkitNativeFullScreen) {
 		fullScreenEventName = 'webkitfullscreenchange';
 	} else if (hasMozNativeFullScreen) {
-		fullScreenEventName = 'mozfullscreenchange';
+		fullScreenEventName = 'fullscreenchange';
 	} else if (hasMsNativeFullScreen) {
 		fullScreenEventName = 'MSFullscreenChange';
 	}

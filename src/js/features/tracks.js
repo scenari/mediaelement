@@ -583,7 +583,10 @@ Object.assign(MediaElementPlayer.prototype, {
 			let i = t.searchTrackPosition(track.entries, t.media.currentTime);
 			if (i > -1) {
 				// Set the line before the timecode as a class so the cue can be targeted if needed
-				t.captionsText.innerHTML = sanitize(track.entries[i].text);
+				var text = track.entries[i].text;
+				if (typeof t.options.captionTextPreprocessor === 'function')
+					text = t.options.captionTextPreprocessor(text);
+				t.captionsText.innerHTML = sanitize(text);
 				t.captionsText.className = `${t.options.classPrefix}captions-text ${(track.entries[i].identifier || '')}`;
 				t.captions.style.display = '';
 				t.captions.style.height = '0px';
@@ -899,7 +902,7 @@ mejs.TrackFormatParser = {
 						text = `${text}\n${lines[i]}`;
 						i++;
 					}
-					text = text.trim().replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig, "<a href='$1' target='_blank'>$1</a>");
+					text = text === null ? '' : text.trim().replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig, "<a href='$1' target='_blank'>$1</a>");
 					entries.push({
 						identifier: identifier,
 						start: (convertSMPTEtoSeconds(timecode[1]) === 0) ? 0.200 : convertSMPTEtoSeconds(timecode[1]),
