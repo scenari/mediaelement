@@ -448,7 +448,7 @@ const YouTubeIframeRenderer = {
 					html5: 1,
 					iv_load_policy: 3
 				}, youtube.options.youtube),
-				origin: window.location.host,
+				origin: window.location.href,
 				events: {
 					onReady: (e) => {
 						mediaElement.youTubeApi = youTubeApi = e.target;
