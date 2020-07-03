@@ -65,7 +65,7 @@ const HlsNativeRenderer = {
 		prefix: 'native_hls',
 		hls: {
 			// Special config: used to set the local path/URL of hls.js library
-			path: 'https://cdn.jsdelivr.net/npm/hls.js@0.12.4',
+			path: 'https://cdn.jsdelivr.net/npm/hls.js@0.13.2',
 			// To modify more elements from hls.js,
 			// see https://github.com/video-dev/hls.js/blob/master/doc/API.md#fine-tuning
 			autoStartLoad: false,
@@ -231,6 +231,13 @@ const HlsNativeRenderer = {
 						}
 						return;
 					}
+				} else if (name == "hlsManifestLoaded") {
+					const event = createEvent('me-qualitiesavailable', mediaElement);
+					mediaElement.dispatchEvent(event);
+
+				} else if (name == "hlsLevelSwitching") {
+					const event = createEvent('me-qualitychange', mediaElement);
+					mediaElement.dispatchEvent(event);
 				}
 				const event = createEvent(name, mediaElement);
 				event.data = data;
@@ -296,6 +303,27 @@ const HlsNativeRenderer = {
 				hlsPlayer.destroy();
 			}
 		};
+
+		node.getQualities = () => {
+			const qualities = [];
+			if (hlsPlayer.levels.length < 2) return qualities;
+			for (let i = 0, total = hlsPlayer.levels.length; i < total; i++) {
+				const level = hlsPlayer.levels[i];
+				if (level.height) qualities.push({ label: level.height + 'p', value: i.toString(), height: level.height });
+			}
+			qualities.sort((qualA, qualB) =>  qualB.height - qualA.height);
+			qualities.push({ label: 'Auto', value: -1 });
+			return qualities;
+		}
+
+		node.getQuality = () => {
+			if (hlsPlayer.autoLevelEnabled) return "-1";
+			return hlsPlayer.nextLoadLevel.toString();
+		}
+
+		node.setQuality = (quality) => {
+			hlsPlayer.nextLevel = parseInt(quality);
+		}
 
 		const event = createEvent('rendererready', node);
 		mediaElement.dispatchEvent(event);

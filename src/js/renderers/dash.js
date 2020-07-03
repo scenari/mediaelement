@@ -263,6 +263,37 @@ const DashNativeRenderer = {
 			}
 		};
 
+		node.getQualities = () => {
+			const qualities = [];
+			const bitrates = dashPlayer.getBitrateInfoListFor("video");
+			if (bitrates.length < 2) return qualities;
+			for (let i = 0, total = bitrates.length; i < total; i++) {
+				const bitrate = bitrates[i];
+				qualities.push({ label: bitrate.height + 'p', value: bitrate.qualityIndex, height: bitrate.height });
+			}
+			qualities.sort((qualA, qualB) =>  qualB.height - qualA.height);
+			qualities.push({ label: 'Auto', value: -1 });
+			return qualities;
+		}
+
+		node.getQuality = () => {
+			if (dashPlayer.getSettings().streaming.abr.autoSwitchBitrate.video) return -1;
+			return dashPlayer.getQualityFor("video");
+		}
+
+		node.setQuality = (quality) => {
+			dashPlayer.updateSettings({
+				'streaming': {
+					'abr': {
+						'autoSwitchBitrate': {
+							'video': quality == -1
+						}
+					}
+				}
+			});
+			if (quality != -1) dashPlayer.setQualityFor("video", quality);
+		}
+
 		const event = createEvent('rendererready', node);
 		mediaElement.dispatchEvent(event);
 

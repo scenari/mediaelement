@@ -406,6 +406,16 @@ const DailyMotionIframeRenderer = {
 				}
 			});
 
+			dmPlayer.addEventListener('qualitiesavailable', () => {
+				const event = mejs.Utils.createEvent('me-qualitiesavailable', dm);
+				mediaElement.dispatchEvent(event);
+			});
+
+			dmPlayer.addEventListener('qualitychange', () => {
+				const event = mejs.Utils.createEvent('me-qualitychange', dm);
+				mediaElement.dispatchEvent(event);
+			});
+
 			// give initial events
 			const initEvents = ['rendererready', 'loadedmetadata', 'loadeddata', 'canplay'];
 
@@ -467,6 +477,19 @@ const DailyMotionIframeRenderer = {
 		dm.destroy = () => {
 			dmPlayer.destroy();
 		};
+
+		dm.getQualities = () => {
+			if (dmPlayer.qualities.length < 2) return [];
+			return dmPlayer.qualities.map((qual) => { return { label: qual + 'p', value: qual }});
+		}
+
+		dm.getQuality = () => {
+			return dmPlayer.quality;
+		}
+
+		dm.setQuality = (quality) => {
+			dmPlayer.setQuality(quality);
+		}
 
 		return dm;
 	}

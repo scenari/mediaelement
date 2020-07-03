@@ -520,7 +520,7 @@ const YouTubeIframeRenderer = {
 								}
 								break;
 							case 1:	// YT.PlayerState.PLAYING
-								events = ['play', 'playing'];
+								events = ['play', 'playing', 'me-qualitiesavailable'];
 								paused = false;
 								ended = false;
 								youtube.startInterval();
@@ -546,6 +546,10 @@ const YouTubeIframeRenderer = {
 							const event = createEvent(events[i], youtube);
 							mediaElement.dispatchEvent(event);
 						}
+					},
+					onPlaybackQualityChange: () => {
+						const event = createEvent("me-qualitychange", youtube);
+						mediaElement.dispatchEvent(event);
 					},
 					onError: (e) => errorHandler(e)
 				}
@@ -629,6 +633,35 @@ const YouTubeIframeRenderer = {
 			return quality && resolutions.indexOf(quality) > -1 && id ? `https://img.youtube.com/vi/${id}/${quality}.jpg` : '';
 		};
 
+		youtube.getQualities = () => {
+			const qualities = [];
+			var availables = youTubeApi.getAvailableQualityLevels();
+			if (availables.length < 2) qualities;
+			// The resolutions are alreay ordonned
+			for (var i=0; i<availables.length; i++) {
+				const value = availables[i];
+				var label = null;
+				if (value == "hd2160") label = '2160p';
+				else if (value == "hd1440") label = '1440p';
+				else if (value == "hd1080") label = '1080p';
+				else if (value == "hd720") label = '720p';
+				else if (value == "large") label = '480p';
+				else if (value == "medium") label = '360p';
+				else if (value == "small") label = '240p';
+				else if (value == "tiny") label = '144p';
+				else if (value == "auto") label = 'Auto';
+				if (label) qualities.push({ label, value });
+			}
+			return qualities;
+		}
+
+		youtube.getQuality = () => {
+			return youTubeApi.getPlaybackQuality();
+		}
+
+		youtube.setQuality = (quality) => {
+			youTubeApi.setPlaybackQuality(quality);
+		}
 		return youtube;
 	}
 };
