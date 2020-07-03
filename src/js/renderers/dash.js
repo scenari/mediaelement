@@ -209,6 +209,10 @@ const DashNativeRenderer = {
 					mediaElement.generateError(e.message, node.src);
 					console.error(e);
 				} else {
+					if (e.type == "qualityChangeRequested") {
+						const event = createEvent("me-qualitychange", mediaElement);
+						mediaElement.dispatchEvent(event);
+					}
 					const event = createEvent(e.type, mediaElement);
 					event.data = e;
 					mediaElement.dispatchEvent(event);
