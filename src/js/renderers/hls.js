@@ -306,11 +306,11 @@ const HlsNativeRenderer = {
 
 		node.getQualities = () => {
 			const qualities = [];
-			if (hlsPlayer.levels.length < 2) return qualities;
 			for (let i = 0, total = hlsPlayer.levels.length; i < total; i++) {
 				const level = hlsPlayer.levels[i];
 				if (level.height) qualities.push({ label: level.height + 'p', value: i.toString(), height: level.height });
 			}
+			if (qualities.length < 2) return [];
 			qualities.sort((qualA, qualB) =>  qualB.height - qualA.height);
 			qualities.push({ label: 'Auto', value: -1 });
 			return qualities;
